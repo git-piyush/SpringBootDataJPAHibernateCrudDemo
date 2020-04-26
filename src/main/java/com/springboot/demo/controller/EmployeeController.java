@@ -22,35 +22,41 @@ import com.springboot.demo.service.EmployeeService;
 public class EmployeeController {
 		
 		private EmployeeService employeeService=null;
-		private EmployeeModelResponse modelResponse=null;
 		@Autowired
-		public EmployeeController(EmployeeService employeeService, EmployeeModelResponse modelResponse) {
+		public EmployeeController(EmployeeService employeeService) {
 			super();
 			this.employeeService = employeeService;
-			this.modelResponse = modelResponse;
 		}
 		// expose "/employees" and return list of employees
 		@GetMapping("/getall")
 		public EmployeeModelResponse findAll() {
-			EmployeeModelResponse modelResponse;
-			modelResponse = employeeService.findAll();
+			EmployeeModelResponse modelResponse=new EmployeeModelResponse();
+			List<Employee> employeeList = employeeService.findAll();
+			modelResponse.setEmployeeList(employeeList);
 			return modelResponse;
+			
 		}
 		
 		@GetMapping("/getemployeebyid")
 		public EmployeeModelResponse findById(@Valid @RequestBody EmployeeModelRequest modelRequest) {
-			modelResponse = employeeService.findById(modelRequest.getEmployeeId());
+			EmployeeModelResponse modelResponse=new EmployeeModelResponse();
+			Employee employee = employeeService.findById(modelRequest.getEmployeeId());
+			modelResponse.setEmployee(employee);
 			return modelResponse;
 		}
 		
 		@PostMapping("/createemployee")
-		public EmployeeModelResponse save(@Valid @RequestBody EmployeeModelRequest modelRequest) {
-			modelResponse = employeeService.save(modelRequest);
+		public EmployeeModelResponse save(@Valid @RequestBody Employee modelRequest) {
+			EmployeeModelResponse modelResponse=new EmployeeModelResponse();
+			Employee employee = employeeService.save(modelRequest);
+			modelResponse.setEmployee(employee);
+			modelResponse.setErrorDec("Below employee added");
 			return modelResponse;
 		}
 		
 		@DeleteMapping("/deleteemployee")
 		public EmployeeModelResponse delete(@Valid @RequestBody EmployeeModelRequest modelRequest) {
+			EmployeeModelResponse modelResponse=new EmployeeModelResponse();
 			modelResponse = employeeService.deleteById(modelRequest.getEmployeeId());
 			return modelResponse;
 		}

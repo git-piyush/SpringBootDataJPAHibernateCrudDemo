@@ -1,11 +1,12 @@
 package com.springboot.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.springboot.demo.dao.EmployeeDAO;
+import com.springboot.demo.dao.EmployeeRepository;
 import com.springboot.demo.entity.Employee;
 import com.springboot.demo.modelrequest.EmployeeModelRequest;
 import com.springboot.demo.modelresponse.EmployeeModelResponse;
@@ -13,40 +14,48 @@ import com.springboot.demo.modelresponse.EmployeeModelResponse;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-	private EmployeeDAO employeeDAO;
+	private EmployeeRepository employeeRepository;
 	
 	@Autowired
-	public EmployeeServiceImpl(EmployeeDAO employeeDAO) {
+	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
 		super();
-		this.employeeDAO = employeeDAO;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
-	public EmployeeModelResponse findAll() {
-		EmployeeModelResponse modelResponse = new EmployeeModelResponse();
-		modelResponse = employeeDAO.findAll();
-		return modelResponse;
+	public List<Employee> findAll() {
+		return employeeRepository.findAll();
 	}
 
 	@Override
-	public EmployeeModelResponse findById(int theId) {
-		EmployeeModelResponse modelResponse = new EmployeeModelResponse();
-		modelResponse = employeeDAO.findById(theId);
-		return modelResponse;
+	public Employee findById(int theId) {
+		Optional<Employee> result = employeeRepository.findById(theId);
+		Employee theEmployee = null;
+		if(result.isPresent()) {
+			theEmployee = result.get();
+		}else {
+			throw new RuntimeException("Did not find employee!!");
+		}
+		return theEmployee;
+		
 	}
 
 	@Override
-	public EmployeeModelResponse save(EmployeeModelRequest modelRequest) {
-		EmployeeModelResponse modelResponse = new EmployeeModelResponse();
-		modelResponse = employeeDAO.save(modelRequest);
-		return modelResponse;
+	public Employee save(Employee modelRequest) {
+		Employee employee = employeeRepository.save(modelRequest);
+		return employee;
 	}
 
 	@Override
 	public EmployeeModelResponse deleteById(int theId) {
 		EmployeeModelResponse modelResponse = new EmployeeModelResponse();
-		modelResponse = employeeDAO.findById(theId);
-		modelResponse = employeeDAO.deleteById(modelResponse.getEmployee());
+		try {
+			employeeRepository.deleteById(theId);
+			modelResponse.setErrorDec("Requested employee removed");
+		} catch (Exception e) {
+			System.out.println("Some exception");
+			e.printStackTrace();
+		}
 		return modelResponse;
 		
 	}

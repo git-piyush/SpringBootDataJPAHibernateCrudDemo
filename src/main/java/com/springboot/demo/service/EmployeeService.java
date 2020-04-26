@@ -8,11 +8,11 @@ import com.springboot.demo.modelresponse.EmployeeModelResponse;
 
 public interface EmployeeService {
 
-    public EmployeeModelResponse findAll();
+    public List<Employee> findAll();
 	
-	public EmployeeModelResponse findById(int theId);
+	public Employee findById(int theId);
 	
-	public EmployeeModelResponse save(EmployeeModelRequest modelRequest);
+	public Employee save(Employee modelRequest);
 	
 	public EmployeeModelResponse deleteById(int theId);
 
